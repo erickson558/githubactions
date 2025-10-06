@@ -1,6 +1,7 @@
 name: CI Workflow
-on: repository_dispatch:
-    types: [test-event]
+on: 
+    repository_dispatch:
+        types: [test-event]
 jobs:
     build:
         runs-on: ubuntu-latest
