@@ -1,0 +1,10 @@
+name: CI Workflow
+on: repository_dispatch:
+    types: [test-event]
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: CheckoutBuild
+              run: echo "Building..."
+            

@@ -1,0 +1,12 @@
+﻿{
+  "repositoryName": "erickson558/githubactions",
+  "pipelineDirectory": "githubactions",
+  "workspaceDirectory": "githubactions\\githubactions",
+  "repositories": {
+    "erickson558/githubactions": {
+      "repositoryPath": "githubactions\\githubactions",
+      "lastRunOn": "10/05/2025 19:56:23 -06:00"
+    }
+  },
+  "lastRunOn": "10/05/2025 19:56:52 -06:00"
+}
