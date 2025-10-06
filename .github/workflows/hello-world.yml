@@ -22,7 +22,7 @@ jobs:
         run: echo "Running tests..."
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: test
     if: ${{ needs.test.result == 'success' }}
     steps:

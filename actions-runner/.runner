@@ -1,0 +1,11 @@
+﻿{
+  "agentId": 2,
+  "agentName": "test-runner",
+  "poolId": 1,
+  "poolName": "Default",
+  "serverUrl": "https://pipelinesghubeus15.actions.githubusercontent.com/20glAPeydRbqjAnsxrmLQKZ3hevCEMgCwxsYk0Yr1MUb0vkyT9/",
+  "gitHubUrl": "https://github.com/erickson558/githubactions",
+  "workFolder": "_work",
+  "useV2Flow": true,
+  "serverUrlV2": "https://broker.actions.githubusercontent.com/"
+}
