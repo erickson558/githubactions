@@ -9,7 +9,7 @@ inputs:
 outputs:
   app-status:
     description: "The status of the tests"
-    vlue: "success" 
+    value: "success" 
 runs:
   using: "composite" 
   steps:
