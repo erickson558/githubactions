@@ -2,10 +2,20 @@
 name: CI Workflow
 
 on: 
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+     - main
+
+     #schedule:
+      #- cron: '*/3 * * * *'  # Runs every 3 minutes  
     #pull_request:
      # types: [opened, closed]
-     shcedule:
-       - cron: '*/3 * * * *'  # Runs every 3 minutes
+     #schedule:
+      #- cron: '*/3 * * * *'  # Runs every 3 minutes
 
 jobs:
 
