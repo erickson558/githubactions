@@ -32,7 +32,6 @@ jobs:
           #  print("Running tests....")
           #shell: python
         - name: Run Tests
-          if: ${{ steps.step1.outputs.status == 'sucess' }}
           run: |
             echo "El resultado del paso anterior fue ${{ steps.step1.outputs.status }}"
             echo "Running tests...."
