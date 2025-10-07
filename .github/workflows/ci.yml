@@ -1,34 +1,16 @@
-
-name: CI Workflow
-
+name: CI WorkFlow
 
 on:
-  issues:
-    types: [opened, closed,reopened]
-  #release:
-   # types: [created]
-  #workflow_dispatch:
-  #push:
-  #  branches:
-  #    - develop
-  #pull_request:
-  #  types: [opened, closed]
-  #  branches:
-  #   - main
-
-     #schedule:
-      #- cron: '*/3 * * * *'  # Runs every 3 minutes  
-    #pull_request:
-     # types: [opened, closed]
-     #schedule:
-      #- cron: '*/3 * * * *'  # Runs every 3 minutes
-
+    push:
+      branches:
+        - develop
+  
 jobs:
-
-  build:
-
-    runs-on: ubuntu-latest
-    steps:
-      - name: Build Project
-
-        run: echo "Building proyect...."
+    test:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Test Project
+          run: |
+            print("Installing dependencies....")
+            print("Running tests....")
+          shell: python
