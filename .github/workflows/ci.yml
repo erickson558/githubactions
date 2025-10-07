@@ -32,7 +32,14 @@ jobs:
           #  print("Running tests....")
           #shell: python
         - name: Run Tests
+          #run: |
+          #  echo "El resultado del paso anterior fue ${{ steps.step1.outputs.status }}"
+          #  echo "Running tests...."
+          #shell: bash
+          uses: ./.github/actions/test
+          with:
+            python-version: '3.12'
+          id: run-tests
+        - name: Test Result
           run: |
-            echo "El resultado del paso anterior fue ${{ steps.step1.outputs.status }}"
-            echo "Running tests...."
-          shell: bash
+            echo "The test result is ${{ steps.run-tests.outputs.app-status }}"

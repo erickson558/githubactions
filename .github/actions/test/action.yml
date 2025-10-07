@@ -1,0 +1,21 @@
+name: "Local CI Workflow"
+description: "A workflow to run tests on push to develop branch"
+
+inputs:
+  python-version:
+    description: "The version of Python to use"
+    required: true
+    default: "3.12"
+outputs:
+  app-status:
+    description: "The status of the tests"
+    vlue: "success" 
+runs:
+  using: "composite" 
+  steps:
+    - name: Run Test
+      run: |
+        echo "Test executed successfully"
+      shell: bash
+
+    
