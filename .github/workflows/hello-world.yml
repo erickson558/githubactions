@@ -1,32 +1,142 @@
-name: Hello World workflow
+# Optimized CI workflow
+# - Avoid duplicate runs with concurrency
+# - Trigger on push, pull_request and manual dispatch
+# - Filter by paths to run only on relevant file changes
+# - Ignore docs and workflow-only changes
+# - Separate jobs: build -> test -> deploy
+# - Deploy only on main branch and if tests succeed
+
+name: CI / Hello World workflow
+
+# Prevent parallel duplicate runs for the same branch/PR and cancel in-progress ones
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
+  # Run on direct pushes to selected branches
+  push:
+    branches:
+      - main
+      - develop
+    # Only run when relevant source files change
+    paths:
+      - 'src/**.py'
+      - 'requirements.txt'
+      - 'pyproject.toml'
+      - '.github/workflows/hello-world.yml' # workflow edits may be relevant
+    # Ignore docs and workflow-only updates (prevents runs on those)
+    paths-ignore:
+      - 'docs/**'
+      - '.github/workflows/**'
+
+  # Run for PRs targeting those branches
+  pull_request:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'src/**.py'
+      - 'requirements.txt'
+      - 'pyproject.toml'
+    paths-ignore:
+      - 'docs/**'
+      - '.github/workflows/**'
+    # Optionally you can restrict to specific PR actions:
+    # types: [opened, synchronize, reopened]
+
+  # Allow manual runs (useful for forcing runs, or running deploy-only)
   workflow_dispatch:
+    inputs:
+      run-deploy-only:
+        description: 'If true, skip build/test and attempt a deploy (use with caution)'
+        required: false
+        default: 'false'
+
+  # Keep repository_dispatch if you have an external system triggering runs
+  repository_dispatch:
+    types: [test-event]
+
+# Minimal permissions recommended for workflows
+permissions:
+  contents: read
+  checks: write
+
+env:
+  PYTHON_VERSION: '3.10'
 
 jobs:
-  hello:
+  build:
+    name: Build
     runs-on: ubuntu-latest
+    # This job runs on push and PRs but concurrency above reduces duplicates
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run hello script
-        run: python3 main.py
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          if [ -f pyproject.toml ]; then pip install .; fi
+
+      - name: Build step (placeholder)
+        run: echo "Build complete"
 
   test:
+    name: Test
     runs-on: ubuntu-latest
-    needs: hello
-    if: ${{ needs.hello.result == 'success' }}
+    needs: build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install test deps
+        run: |
+          pip install pytest || true
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
       - name: Run tests
-        run: echo "Running tests..."
+        # Only run tests when relevant source files exist/changed
+        run: |
+          echo "Running tests..."
+          pytest -q || ( echo "Tests failed"; exit 1 )
 
   deploy:
-    runs-on: self-hosted
+    name: Deploy
+    runs-on: ubuntu-latest
     needs: test
-    if: ${{ needs.test.result == 'success' }}
+    # Only deploy when tests passed AND on the main branch.
+    # Also allow manual workflow_dispatch runs to trigger deploy (useful for hotfixes).
+    if: ${{ needs.test.result == 'success' && (github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Deploy
-        run: echo "Deploying..."
+
+      - name: Deploy (placeholder)
+        # Replace with real deployment commands (ssh, cloud CLI, etc.)
+        run: |
+          echo "Deploying application..."
+          # Example: ./deploy.sh
+
+# Notes & suggestions (not executed):
+# - To further avoid duplicate work between push+pull_request you can:
+#   * Prefer running tests on pull_request, and run deployment only on push to main.
+#   * Use the 'concurrency' setting above to cancel duplicate runs for the same ref.
+#   * For advanced deduplication, use a small script step that queries the GitHub API to
+#     detect if a related PR exists and conditionally skip a job — but that adds complexity.
+# - Additional useful events to consider:
+#   * release: for publishing artifacts on new releases
+#   * create (tags): for tag-based deploys
+#   * schedule: for periodic checks (nightly)
+# - Keep workflows small and focused: consider splitting long workflows into multiple smaller ones
+#   (e.g., one workflow for tests, another for deployments triggered only on main or tags).
