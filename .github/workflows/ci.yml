@@ -1,28 +1,30 @@
 
 name: CI Workflow
 
-on:
+
+on: 
+  workflow_dispatch:
   push:
-    #branches: [main]
-    #branches-ignore:
     branches:
       - develop
-      - main
-      - "release/*"
-    paths:
-      - '.github/workflows/**'
-      
-  
+  pull_request:
+    types: [opened, closed]
+    branches:
+     - main
+
+     #schedule:
+      #- cron: '*/3 * * * *'  # Runs every 3 minutes  
     #pull_request:
-    # types: [opened, closed]
-  #schedule:
-    #- cron: '*/3 * * * *'  # Runs every 3 minutes
+     # types: [opened, closed]
+     #schedule:
+      #- cron: '*/3 * * * *'  # Runs every 3 minutes
+
 jobs:
 
   build:
 
     runs-on: ubuntu-latest
-
+    if: ${{github.event_name == 'push'}}
     steps:
       - name: Build Project
 
