@@ -9,8 +9,18 @@ jobs:
     test:
       runs-on: ubuntu-latest
       steps:
-        - name: Test Project
+        - name: Install dependencies
           run: |
-            print("Installing dependencies....")
-            print("Running tests....")
-          shell: python
+            echo "Installing dependencies...."
+            echo "status=sucess" >> $GITHUB_OUTPUT
+          id: step1
+          #run: |
+          #  print("Installing dependencies....")
+          #  print("Running tests....")
+          #shell: python
+        - name: Run Tests
+          if: ${{ steps.step1.outputs.status == 'sucess' }}
+          run: |
+            echo "El resultado del paso anterior fue ${{ steps.step1.outputs.status }}"
+            echo "Running tests...."
+          shell: bash
