@@ -4,10 +4,13 @@ on:
     push:
       branches:
         - develop
-  
+env:
+    APP_ENV: "development"  
 jobs:
     test:
       runs-on: ubuntu-latest
+      env:
+        TEST_LEVEL: "unit"
       steps:
         - name: checkout code
           uses: actions/checkout@v5
@@ -41,5 +44,11 @@ jobs:
             python-version: '3.12'
           id: run-tests
         - name: Test Result
+          env:
+            TEST_LEVEL: "integration"
           run: |
             echo "The test result is ${{ steps.run-tests.outputs.app-status }}"
+            echo "The test level is $TEST_LEVEL"
+        
+        - name: Show Environment
+          run: echo "El entorno es $APP_ENV"
