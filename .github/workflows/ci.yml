@@ -11,6 +11,7 @@ jobs:
       runs-on: ubuntu-latest
       env:
         TEST_LEVEL: "unit"
+      environment: staging
       steps:
         - name: checkout code
           uses: actions/checkout@v5
