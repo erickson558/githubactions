@@ -4,33 +4,38 @@ on:
     push:
       branches:
         - develop
-env:
-    APP_ENV: "development"  
+#env:
+#    APP_ENV: "development"  
 jobs:
     test:
       runs-on: ubuntu-latest
-      env:
-        TEST_LEVEL: "unit"
-      environment: staging
+#      env:
+#        TEST_LEVEL: "unit"
+#      environment: staging
       steps:
-        - name: checkout code
+        - name: checkout repository
           uses: actions/checkout@v5
-          with:
-            fetch-depth: '1'
+         # with:
+         #   fetch-depth: '1'
           #run: |
           #  git init
           #  git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           #  git fetch origin ${{ github.ref }} --depth=1
           #  git checkout FETCH_HEAD
           #  ls -la
-        - name: Install dependencies
-          uses: actions/setup-python@v4
+        - name: Configure UV and Python
+          #uses: actions/setup-python@v4
+          uses: astral-sh/setup-uv@v6
           with:
             python-version: '3.12'
+
+        - name: Install dependencies
+          run: |
+            uv sync
           #run: |
           #  echo "Installing dependencies...."
           #  echo "status=sucess" >> $GITHUB_OUTPUT
-          id: step1
+          #id: step1
           #run: |
           #  print("Installing dependencies....")
           #  print("Running tests....")
@@ -38,21 +43,41 @@ jobs:
         - name: Run Tests
           #run: |
           #  echo "El resultado del paso anterior fue ${{ steps.step1.outputs.status }}"
-          #  echo "Running tests...."
           #shell: bash
-          uses: ./.github/actions/test
+          #uses: ./.github/actions/test
+          #with:
+          #  python-version: '3.12'
+          id: run-tests
+          run: |
+            uv run pytest
+          
+        #- name: Test Result
+        #  env:
+        #    TEST_LEVEL: "integration"
+        #  run: |
+        #    echo "The test result is ${{ steps.run-tests.outputs.app-status }}"
+        #    echo "The test level is $TEST_LEVEL"
+        
+       # - name: Show Environment
+        #  run: echo "El entorno es $APP_ENV"
+        
+       # - name: Show Secret
+       #   run: echo "La contraseña es ${{ secrets.DB_PASSWORD }}"
+    deploy:
+      
+      runs-on: self-hosted
+      steps:
+        - name: checkout repository
+          uses: actions/checkout@v5
+        
+        - name: Configure UV and Python
+          uses: astral-sh/setup-uv@v6
           with:
             python-version: '3.12'
-          id: run-tests
-        - name: Test Result
-          env:
-            TEST_LEVEL: "integration"
+
+        - name: Install Dependencies
           run: |
-            echo "The test result is ${{ steps.run-tests.outputs.app-status }}"
-            echo "The test level is $TEST_LEVEL"
+            uv sync
         
-        - name: Show Environment
-          run: echo "El entorno es $APP_ENV"
-        
-        - name: Show Secret
-          run: echo "La contraseña es ${{ secrets.DB_PASSWORD }}"
+        - name: Run App
+          run: uv run main.py
