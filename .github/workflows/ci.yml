@@ -52,3 +52,6 @@ jobs:
         
         - name: Show Environment
           run: echo "El entorno es $APP_ENV"
+        
+        - name: Show Secret
+          run: echo "La contraseña es ${{ secrets.DB_PASSWORD }}"
